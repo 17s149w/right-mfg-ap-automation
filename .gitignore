@@ -13,3 +13,6 @@ fixtures/
 *-fixtures/
 real-invoices*.json
 *.pdf
+
+# Transfer bundles — never commit
+*.zip
