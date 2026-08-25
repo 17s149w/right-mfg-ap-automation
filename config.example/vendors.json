@@ -1,0 +1,43 @@
+{
+  "_comment": "STEERING FILE (spec §6.1). Vendor identity predicts behavior more reliably than anything on the document. ap-setup copies this to <workDir>/vendors.json and reconciles match_names/aliases with Ian against the real Job Boss + QuickBooks + Suppliers/ vendor lists. handling: file_only | standard | statement_only. This is the file the system LEARNS into over time (new vendors appended after human confirmation; extraction notes appended per vendor). Tolerances are NEVER learned — preset only.",
+  "vendors": [
+    {
+      "match_names": ["Waste Management", "WM"],
+      "folder": "Suppliers/Waste Management",
+      "handling": "file_only",
+      "file_naming": "year_month",
+      "why": "On auto-pay. Ian never enters it; he files it for the record only."
+    },
+    {
+      "match_names": ["Century"],
+      "folder": "Suppliers/Century",
+      "handling": "file_only",
+      "file_naming": "year_month",
+      "why": "Monthly business insurance premium. Auto-pay, no PO."
+    },
+    {
+      "match_names": ["OZB"],
+      "folder": "Suppliers/OZB",
+      "handling": "standard",
+      "ships_from": "GA",
+      "expect_not_yet_received": true,
+      "why": "Out of state. Invoice always beats the goods. The workflow for these always hits not-yet-received. Do NOT report as an anomaly."
+    },
+    {
+      "match_names": ["Hydraulic Controls"],
+      "folder": "Suppliers/Hydraulic Controls",
+      "handling": "standard",
+      "expect_price_mismatch": true,
+      "why": "Hydraulic kits get reconfigured during the build, so the invoice drifts from the PO. This supplier almost never matches."
+    },
+    {
+      "match_names": ["O'Reilly", "O'Reilly Auto Parts"],
+      "folder": "Suppliers/O'Reilly",
+      "handling": "standard",
+      "statement_note": "Messy statements — frequent credits and aged rows. Review every aged row."
+    }
+  ],
+  "extraction_notes": {
+    "_comment": "Per-vendor learned quirks about how their documents get READ (e.g. 'invoice # and PO # are swapped in the header', 'PO printed as P.O 1234 with a space', 'scanned, needs OCR'). The operational skill may auto-append here (low risk — a bad note only causes a flag Ian already reviews) and logs each addition in the report. These influence EXTRACTION only, never the entry/match path."
+  }
+}

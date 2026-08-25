@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JobBOSS² — Vendor Invoices</title>
+<style>
+  :root{
+    --jb-blue:#1b4f8a;
+    --jb-blue-dark:#143d6b;
+    --jb-accent:#2f80c7;
+    --jb-gray:#5a6472;
+    --jb-bg:#eef1f5;
+    --jb-panel:#ffffff;
+    --jb-border:#cdd4de;
+    --jb-line:#e2e7ee;
+    --jb-green:#2e7d46;
+    --jb-amber:#b7791f;
+    --jb-red:#b23b3b;
+    --jb-text:#22303f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--jb-bg);
+    color:var(--jb-text);
+    font-size:14px;
+    line-height:1.4;
+  }
+  /* ---- Top bar ---- */
+  .topbar{
+    background:linear-gradient(180deg,var(--jb-blue),var(--jb-blue-dark));
+    color:#fff;
+    display:flex;
+    align-items:center;
+    padding:0 18px;
+    height:52px;
+    box-shadow:0 1px 4px rgba(0,0,0,.2);
+  }
+  .topbar .logo{
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:.3px;
+  }
+  .topbar .logo .sup{font-size:11px;vertical-align:super;opacity:.85;}
+  .topbar .crumb{margin-left:16px;font-size:12px;opacity:.8;}
+  .topbar .spacer{flex:1;}
+  .topbar .user{font-size:12px;opacity:.9;}
+
+  /* ---- Login ---- */
+  #login-panel{
+    max-width:360px;
+    margin:70px auto;
+    background:var(--jb-panel);
+    border:1px solid var(--jb-border);
+    border-radius:6px;
+    box-shadow:0 4px 18px rgba(20,40,70,.12);
+    overflow:hidden;
+  }
+  #login-panel .login-head{
+    background:var(--jb-blue);
+    color:#fff;
+    padding:16px 20px;
+    font-weight:600;
+  }
+  #login-panel .login-body{padding:20px;}
+  #login-panel label{display:block;font-size:12px;color:var(--jb-gray);margin:10px 0 4px;}
+  .field-input{
+    width:100%;
+    padding:8px 10px;
+    border:1px solid var(--jb-border);
+    border-radius:4px;
+    font-size:14px;
+    background:#fff;
+  }
+  .field-input:focus{outline:2px solid var(--jb-accent);outline-offset:-1px;}
+  .btn{
+    background:var(--jb-accent);
+    color:#fff;
+    border:none;
+    padding:8px 16px;
+    border-radius:4px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn:hover{background:var(--jb-blue);}
+  .btn.secondary{background:#eef2f7;color:var(--jb-blue);border:1px solid var(--jb-border);}
+  .btn.secondary:hover{background:#e0e8f2;}
+  #login-submit{width:100%;margin-top:18px;padding:10px;}
+
+  /* ---- App shell ---- */
+  #app-shell{display:none;}
+  .shell-body{display:flex;min-height:calc(100vh - 52px);}
+  .leftnav{
+    width:210px;
+    background:#20374f;
+    color:#cdd8e6;
+    padding:14px 0;
+    flex-shrink:0;
+  }
+  .leftnav .nav-group{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#7f93ab;padding:12px 18px 4px;}
+  .leftnav a{
+    display:block;
+    padding:9px 18px;
+    color:#cdd8e6;
+    text-decoration:none;
+    font-size:13px;
+    cursor:pointer;
+    border-left:3px solid transparent;
+  }
+  .leftnav a:hover{background:#28425d;color:#fff;}
+  .leftnav a.active{background:#2f527a;color:#fff;border-left-color:var(--jb-accent);}
+
+  .content{flex:1;padding:22px 26px;overflow:auto;}
+  .page-title{font-size:20px;font-weight:600;color:var(--jb-blue-dark);margin:0 0 4px;}
+  .page-sub{color:var(--jb-gray);font-size:12px;margin-bottom:18px;}
+
+  #ap-form{display:none;}
+  .layout{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;}
+  .panel{
+    background:var(--jb-panel);
+    border:1px solid var(--jb-border);
+    border-radius:6px;
+    box-shadow:0 1px 3px rgba(20,40,70,.06);
+    margin-bottom:20px;
+  }
+  .panel .panel-head{
+    padding:10px 16px;
+    border-bottom:1px solid var(--jb-line);
+    font-weight:600;
+    color:var(--jb-blue-dark);
+    background:#f7f9fc;
+    border-radius:6px 6px 0 0;
+    font-size:13px;
+  }
+  .panel .panel-body{padding:16px;}
+  .form-panel{flex:1 1 440px;min-width:400px;}
+  .side-panel{flex:1 1 300px;min-width:280px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}
+  .form-row{display:flex;flex-direction:column;}
+  .form-row.full{grid-column:1 / -1;}
+  label.fld{font-size:12px;color:var(--jb-gray);margin-bottom:4px;font-weight:600;}
+
+  .actions{margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .checkline{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;background:#f4f8fc;border:1px solid var(--jb-line);border-radius:4px;}
+  .checkline input{width:16px;height:16px;}
+  .checkline label{font-size:13px;color:var(--jb-text);}
+
+  /* readback */
+  .readback dl{margin:0;display:grid;grid-template-columns:120px 1fr;gap:8px 10px;}
+  .readback dt{color:var(--jb-gray);font-size:12px;font-weight:600;}
+  .readback dd{margin:0;font-size:14px;font-weight:600;color:var(--jb-text);}
+  #poAmount{color:var(--jb-blue-dark);}
+  #noReceiver{
+    display:none;
+    margin-top:12px;
+    padding:9px 12px;
+    background:#fdf3e7;
+    border:1px solid #eccf9e;
+    color:var(--jb-amber);
+    border-radius:4px;
+    font-size:13px;
+    font-weight:600;
+  }
+
+  /* save confirm toast */
+  #save-confirm{
+    display:none;
+    margin-left:6px;
+    padding:8px 14px;
+    background:#e6f4ea;
+    border:1px solid #b7e0c4;
+    color:var(--jb-green);
+    border-radius:4px;
+    font-weight:600;
+    font-size:13px;
+  }
+
+  /* entered list */
+  #entered-list{list-style:none;margin:0;padding:0;}
+  #entered-list li{
+    padding:9px 12px;
+    border-bottom:1px solid var(--jb-line);
+    font-size:13px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+  }
+  #entered-list li:last-child{border-bottom:none;}
+  #entered-list .tag{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;}
+  #entered-list .tag.qb{background:#e6f4ea;color:var(--jb-green);}
+  #entered-list .tag.noqb{background:#fbe9e9;color:var(--jb-red);}
+  .empty-note{color:var(--jb-gray);font-size:12px;font-style:italic;padding:8px 2px;}
+
+  /* narration */
+  #narration{margin-top:8px;}
+  .narr{
+    margin-bottom:8px;
+    padding:10px 14px;
+    border-radius:5px;
+    border-left:4px solid var(--jb-accent);
+    background:#eef4fb;
+    font-size:13px;
+  }
+  .narr .narr-title{font-weight:700;display:block;margin-bottom:2px;}
+  .narr.info{border-left-color:var(--jb-accent);background:#eef4fb;color:#1c4b78;}
+  .narr.saved{border-left-color:var(--jb-green);background:#e9f5ed;color:#1f6b39;}
+  .narr.flag{border-left-color:var(--jb-amber);background:#fdf4e6;color:#8a5c12;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">JobBOSS<span class="sup">²</span> <span style="opacity:.75;font-weight:400;">— Vendor Invoices</span></div>
+  <div class="crumb">Accounts Payable &rsaquo; Invoice Entry</div>
+  <div class="spacer"></div>
+  <div class="user">ECI &nbsp;|&nbsp; AP Clerk</div>
+</div>
+
+<!-- ================= LOGIN ================= -->
+<div id="login-panel">
+  <div class="login-head">Sign in to JobBOSS²</div>
+  <div class="login-body">
+    <label for="login-username">Username</label>
+    <input id="login-username" class="field-input" type="text" autocomplete="off" value="" />
+    <label for="login-password">Password</label>
+    <input id="login-password" class="field-input" type="password" autocomplete="off" value="" />
+    <button id="login-submit" class="btn" type="button">Sign In</button>
+  </div>
+</div>
+
+<!-- ================= APP SHELL ================= -->
+<div id="app-shell">
+  <div class="shell-body">
+    <nav class="leftnav">
+      <div class="nav-group">Accounts Payable</div>
+      <a id="nav-ap-entry">Vendor Invoices</a>
+      <a>Vendor Master</a>
+      <a>Payment Runs</a>
+      <a>Aging Report</a>
+      <div class="nav-group">Purchasing</div>
+      <a>Purchase Orders</a>
+      <a>Receivers</a>
+      <div class="nav-group">General Ledger</div>
+      <a>Journal Entry</a>
+      <a>Chart of Accounts</a>
+    </nav>
+
+    <div class="content">
+      <h1 class="page-title">Vendor Invoice Entry</h1>
+      <div class="page-sub">Two-way PO match — enter the invoice, look up the receiver, and post.</div>
+
+      <div id="ap-form">
+        <div class="layout">
+
+          <!-- Form panel -->
+          <div class="panel form-panel">
+            <div class="panel-head">Invoice Detail</div>
+            <div class="panel-body">
+              <div class="grid2">
+                <div class="form-row">
+                  <label class="fld" for="invoiceNo">Invoice No.</label>
+                  <input id="invoiceNo" class="field-input" type="text" autocomplete="off" />
+                </div>
+                <div class="form-row">
+                  <label class="fld" for="poNo">PO No.</label>
+                  <input id="poNo" class="field-input" type="text" autocomplete="off" />
+                </div>
+                <div class="form-row">
+                  <label class="fld" for="invoiceDate">Invoice Date</label>
+                  <input id="invoiceDate" class="field-input" type="text" autocomplete="off" placeholder="YYYY-MM-DD" />
+                </div>
+                <div class="form-row">
+                  <label class="fld" for="amount">Invoice Amount</label>
+                  <input id="amount" class="field-input" type="text" autocomplete="off" placeholder="0.00" />
+                </div>
+              </div>
+
+              <div class="actions">
+                <button id="lookupPo" class="btn secondary" type="button">Look Up PO / Receiver</button>
+              </div>
+
+              <div class="checkline">
+                <input id="sendToQb" type="checkbox" checked />
+                <label for="sendToQb">Send to QuickBooks</label>
+              </div>
+
+              <div class="actions">
+                <button id="saveAndNew" class="btn" type="button">Save &amp; New</button>
+                <span id="save-confirm">Saved.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Side / readback panel -->
+          <div class="side-panel">
+            <div class="panel">
+              <div class="panel-head">Related PO — Receiver Match</div>
+              <div class="panel-body readback">
+                <dl>
+                  <dt>Vendor</dt><dd id="vendorDisplay"></dd>
+                  <dt>Expected Amt</dt><dd id="poAmount"></dd>
+                  <dt>Received</dt><dd id="receivedDate"></dd>
+                  <dt>Due Date</dt><dd id="dueDateDisplay"></dd>
+                </dl>
+                <div id="noReceiver"></div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">Entered This Session</div>
+              <div class="panel-body">
+                <ul id="entered-list"></ul>
+                <div class="empty-note" id="entered-empty">No invoices entered yet.</div>
+              </div>
+            </div>
+
+            <div id="narration"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- Hard-coded PO database ----
+  var PO_DB = {
+    "PO-1001": { vendor:"Western Metals",     expected:1250.00, received:"2026-07-20", due:"2026-08-19" },
+    "PO-1002": { vendor:"Century Spring",     expected:480.50,  received:"2026-07-18", due:"2026-08-17" },
+    "PO-1003": { vendor:"Iron Bear Freight",  expected:4444.00, received:"2026-07-15", due:"2026-08-14" },
+    "PO-9999": { vendor:null, expected:null, received:null, due:null, receiver:null }
+  };
+
+  // Normalize: uppercase, strip all non-alphanumerics.
+  function norm(s){ return String(s == null ? "" : s).toUpperCase().replace(/[^A-Z0-9]/g, ""); }
+
+  // Build normalized lookup map once.
+  var NORM_MAP = {};
+  Object.keys(PO_DB).forEach(function(k){ NORM_MAP[norm(k)] = k; });
+
+  function findPo(raw){
+    var key = NORM_MAP[norm(raw)];
+    return key ? PO_DB[key] : null;
+  }
+
+  function money(n){
+    return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
+
+  function $(id){ return document.getElementById(id); }
+
+  // ---- Login ----
+  $("login-submit").addEventListener("click", function(){
+    $("login-panel").style.display = "none";
+    $("app-shell").style.display = "block";
+  });
+
+  // ---- Nav -> reveal AP form ----
+  $("nav-ap-entry").addEventListener("click", function(){
+    $("nav-ap-entry").classList.add("active");
+    $("ap-form").style.display = "block";
+  });
+
+  // ---- PO lookup ----
+  $("lookupPo").addEventListener("click", function(){
+    var raw = $("poNo").value;
+    var rec = findPo(raw);
+    var hasReceiver = rec && rec.receiver !== null && rec.expected != null;
+
+    if (hasReceiver){
+      $("poAmount").textContent = money(rec.expected);
+      $("vendorDisplay").textContent = rec.vendor;
+      $("receivedDate").textContent = rec.received;
+      $("dueDateDisplay").textContent = rec.due;
+      $("noReceiver").style.display = "none";
+      $("noReceiver").textContent = "";
+      // ERP defaults the invoice date to the receiver date (script may overwrite).
+      $("invoiceDate").value = rec.received;
+    } else {
+      // Found without receiver (PO-9999) OR not in DB at all.
+      $("poAmount").textContent = "";
+      $("vendorDisplay").textContent = "";
+      $("receivedDate").textContent = "";
+      $("dueDateDisplay").textContent = "";
+      $("noReceiver").style.display = "block";
+      $("noReceiver").textContent = "No receiver found for this PO — not yet received.";
+    }
+  });
+
+  // ---- Save & New ----
+  $("saveAndNew").addEventListener("click", function(){
+    var invNo   = $("invoiceNo").value;
+    var poNo    = $("poNo").value;
+    var amount  = $("amount").value;
+    var toQb    = $("sendToQb").checked;
+
+    // Append summary row.
+    var empty = $("entered-empty");
+    if (empty) empty.style.display = "none";
+
+    var li = document.createElement("li");
+    var left = document.createElement("span");
+    left.textContent = (invNo || "(no invoice #)") + "  •  " + (poNo || "(no PO)") + "  •  " +
+                       (amount ? money(amount) : "$0.00");
+    var tag = document.createElement("span");
+    tag.className = "tag " + (toQb ? "qb" : "noqb");
+    tag.textContent = toQb ? "Sent to QB" : "Held — not to QB";
+    li.appendChild(left);
+    li.appendChild(tag);
+    $("entered-list").appendChild(li);
+
+    // Show confirm toast.
+    $("save-confirm").style.display = "inline-block";
+
+    // Reset form for next entry.
+    $("invoiceNo").value = "";
+    $("poNo").value = "";
+    $("invoiceDate").value = "";
+    $("amount").value = "";
+    $("poAmount").textContent = "";
+    $("vendorDisplay").textContent = "";
+    $("receivedDate").textContent = "";
+    $("dueDateDisplay").textContent = "";
+    $("sendToQb").checked = true;
+    $("noReceiver").style.display = "none";
+    $("noReceiver").textContent = "";
+  });
+
+  // ---- Narration hook ----
+  window.__apNarrate = function(kind, title, body){
+    var area = $("narration");
+    if (!area) return;
+    var k = (kind === "saved" || kind === "flag") ? kind : "info";
+    var div = document.createElement("div");
+    div.className = "narr " + k;
+    if (title){
+      var t = document.createElement("span");
+      t.className = "narr-title";
+      t.textContent = title;
+      div.appendChild(t);
+    }
+    if (body){
+      var b = document.createElement("span");
+      b.textContent = body;
+      div.appendChild(b);
+    }
+    area.appendChild(div);
+  };
+
+})();
+</script>
+</body>
+</html>

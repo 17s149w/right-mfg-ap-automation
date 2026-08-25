@@ -1,0 +1,35 @@
+{
+  "_comment": "RUN POLICY (spec §6.2). ap-setup copies this to <workDir>/settings.json. The engine reads it via src/config.js. Env vars (AP_DRY_RUN, AP_TOLERANCE_CENTS) override for one-off testing. NOTE: v1 ships EXACT match per Ian's decision (Q8) — price_tolerance_dollars is 0.00 here, NOT the 5.00 from the interview. Raising it later is a data change, not a code change.",
+
+  "dry_run": true,
+  "dry_run_why": "Ship in dry-run. Nothing is clicked-to-save and nothing is written to the ledger until a human flips this to false after clean attended runs. Enforced structurally in the engine.",
+
+  "seed_mode": false,
+  "seed_mode_why": "First run ONLY. Reads the full email window, extracts, writes the ledger, takes NO action, and reports what it WOULD have done. Prevents re-entering the ~45 days Ian already keyed by hand. Run two starts with a warm ledger. ap-setup sets this true for the very first run, then false.",
+
+  "price_tolerance_dollars": 0.00,
+  "price_tolerance_why": "v1 = exact match (Q8): flag ANY penny difference as an exception. More exceptions, zero wrong auto-entries. Ian's interview threshold was $5.00 with a caveat that a fixed public threshold can be gamed by a supplier padding every invoice by $4 — revisit per-vendor later.",
+
+  "date_tolerance_days": 0,
+  "date_mismatch_action": "auto_correct_to_invoice_date",
+  "date_mismatch_why": "Job Boss defaults the date field to the date goods were RECEIVED, not invoiced. Routinely off by a day or two. Correcting it is mechanical, carries no judgment, and Ian does it every time — so it is NOT an exception.",
+
+  "freight_gl_code": "5600",
+  "freight_handling": "flag_only",
+  "freight_why": "v1 flags freight/price mismatches; it does NOT add the GL-5600 freight row — that's a judgment call about whether the charge is legitimate. Phase 2.",
+
+  "autoLookupMode": "blur",
+  "autoLookupMode_why": "How the receiver amount populates after the PO is typed: 'button' clicks a Search button, 'blur' tabs out of the PO field. SET DURING ap-setup once the real Job Boss readback mechanic is observed (reference 02).",
+
+  "exception_email_to": "ian@mixright.com",
+  "exception_email_subject": "Exception invoices waiting",
+  "report_email_to": "ian@mixright.com",
+
+  "email_window_days": 45,
+  "email_window_why": "Do NOT scope by unread. Read a rolling window and dedup against the ledger. 45 days covers a missed run plus month-end statement timing. Only safe from run 2 onward (see seed_mode).",
+  "email_after_processing": "mark_read_leave_in_inbox",
+  "email_why": "Ian rejected archiving — he leaves mail as a searchable record. Marking read preserves his habit, but the run no longer DEPENDS on read/unread state.",
+
+  "not_yet_received_flag_days": 21,
+  "not_yet_received_why": "Every report lists everything still waiting (with age). Items older than this get a soft escalation flag. CONFIRM the threshold with Ian (Q9)."
+}

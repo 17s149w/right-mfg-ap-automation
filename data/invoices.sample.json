@@ -1,0 +1,34 @@
+[
+  {
+    "invoiceNo": "INV-5501",
+    "poNo": "PO-1001",
+    "amount": 1250.00,
+    "invoiceDate": "2026-07-20",
+    "vendor": "Western Metals",
+    "_note": "CLEAN — amount equals receiver ($1,250.00), date equals received date. Enters, Send-to-QB ON."
+  },
+  {
+    "invoiceNo": "INV-5502",
+    "poNo": "PO-1002",
+    "amount": 480.50,
+    "invoiceDate": "2026-07-22",
+    "vendor": "Century Spring",
+    "_note": "CLEAN (date-only difference) — amount matches receiver ($480.50) but invoice date 07-22 != received 07-18. Date is overwritten mechanically; NOT an exception. Enters, Send-to-QB ON."
+  },
+  {
+    "invoiceNo": "INV-5503",
+    "poNo": "PO-1003",
+    "amount": 4504.00,
+    "invoiceDate": "2026-07-15",
+    "vendor": "Iron Bear Freight",
+    "_note": "EXCEPTION — invoice $4,504.00 vs receiver $4,444.00 (+$60.00 freight). Enters with Send-to-QB OFF and is flagged for review."
+  },
+  {
+    "invoiceNo": "INV-5504",
+    "poNo": "PO-9999",
+    "amount": 620.00,
+    "invoiceDate": "2026-07-23",
+    "vendor": "Oswego Bearing",
+    "_note": "NOT YET RECEIVED — PO exists but has no receiver in Job Boss. Nothing entered; held and rechecked next run."
+  }
+]

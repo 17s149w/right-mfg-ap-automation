@@ -1,0 +1,15 @@
+node_modules/
+reports/
+data/work/
+src/runtime-path.json
+.env
+auth.json
+*.webm
+fixtures/
+.DS_Store
+
+# Test fixtures / sample invoices may contain vendor or banking info —
+# never commit or sync them. The engine needs only the JSON sample, not PDFs.
+*-fixtures/
+real-invoices*.json
+*.pdf

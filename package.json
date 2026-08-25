@@ -1,0 +1,18 @@
+{
+  "name": "jobboss2-ap-automation",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Automate AP invoice entry (two-way PO match) into JobBOSS2 via Playwright UI automation, with ledger dedup, four-outcome routing, and a weekly report.",
+  "type": "module",
+  "scripts": {
+    "serve:mock": "node mock/serve.js",
+    "run:mock": "AP_TARGET=mock node src/index.js --input data/invoices.sample.json",
+    "run:real": "AP_TARGET=real node src/index.js --input data/invoices.sample.json",
+    "demo": "bash demo.sh",
+    "codegen": "playwright codegen",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
