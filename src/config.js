@@ -198,6 +198,12 @@ export const config = {
   ),
   slowMoMs: Number(process.env.AP_SLOWMO ?? 0),
 
+  // Which browser Playwright drives. Default (undefined) = Playwright's bundled
+  // Chromium (fetched by `playwright install chromium` in postinstall). Set
+  // AP_BROWSER_CHANNEL=chrome to use the Mac's installed Google Chrome instead —
+  // the fallback when a locked-down network blocks the Chromium download.
+  browserChannel: process.env.AP_BROWSER_CHANNEL || undefined,
+
   timeouts: {
     navigationMs: Number(process.env.AP_NAV_TIMEOUT ?? 45000),
     elementMs: Number(process.env.AP_EL_TIMEOUT ?? 20000),

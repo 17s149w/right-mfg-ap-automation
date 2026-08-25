@@ -13,7 +13,11 @@ JobBOSS² is an Ext JS cloud app; login may be a plain form or SSO/MFA.
 # opens a real browser; log in by hand, navigate to the Vendor Invoice screen,
 # then in the codegen window use "Save storage state" (or run the snippet Sylvan has).
 npm run codegen -- "https://<jobboss-host>"
+# If step 00 fell back to system Chrome (Chromium download blocked):
+#   npm run codegen -- --channel=chrome "https://<jobboss-host>"
 ```
+
+By default this uses Playwright's bundled Chromium (fetched during `npm install`) — a clean browser, which is what you want: Ian logs into Job Boss fresh and you capture that session. It does not use his existing Chrome profile.
 
 Save storageState to a file **outside** OneDrive (e.g. `~/.ap-secrets/jb-state.json`) and note the path for Sylvan. Note how long the session lasts before re-auth.
 

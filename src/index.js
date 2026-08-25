@@ -104,7 +104,11 @@ async function main() {
   const resolvedKeys = new Set(); // NYR keys resolved this run (drop from still-waiting)
 
   const recordVideo = (process.env.AP_VIDEO ?? '').toLowerCase() === 'true';
-  const browser = await chromium.launch({ headless: config.headless, slowMo: config.slowMoMs });
+  const browser = await chromium.launch({
+    headless: config.headless,
+    slowMo: config.slowMoMs,
+    ...(config.browserChannel ? { channel: config.browserChannel } : {}),
+  });
   const context = await browser.newContext(
     recordVideo ? { recordVideo: { dir: 'reports/video', size: { width: 1280, height: 800 } }, viewport: { width: 1280, height: 800 } } : {}
   );

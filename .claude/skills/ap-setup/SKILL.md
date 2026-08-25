@@ -7,7 +7,7 @@ description: One-time installer for the Right Mfg AP automation on Ian's Mac. Ru
 
 You are installing Right Mfg's AP automation on the machine that will run it every week. This is a **one-time, attended** session (Sylvan is here; Ian is available). You have roughly **one hour**. Job Boss specifics can't be known until you're logged in here — capturing them live is the whole point.
 
-Work through the seven steps **in order**. Each has a reference file with the exact commands and what to capture. **Load one reference at a time**, do the step, confirm its gate passed, then move on. Announce which step you're on so Sylvan can follow.
+Work through the steps **in order**, starting with the **runtime check (step 0)** — two minutes that confirm this environment can actually do the job before you invest in it. Each step has a reference file with the exact commands and what to capture. **Load one reference at a time**, do the step, confirm its gate passed, then move on. Announce which step you're on so Sylvan can follow.
 
 ## What you're producing
 
@@ -27,6 +27,7 @@ You may edit exactly two things:
 
 ## Steps (load the reference when you reach the step)
 
+0. `references/00-runtime-check.md` — **do this first.** Confirm this session has local shell + Node, a browser it can drive, and the QuickBooks + Gmail connectors. Decides that Cowork-on-this-Mac is the right runtime before you invest the hour.
 1. `references/01-environment.md` — Node + deps, find the OneDrive root, create `_AP Automation/`, wire the working-dir path, copy config templates.
 2. `references/02-jobboss-capture.md` — **the big one.** Capture the login session and the AP-entry selectors via codegen; watch all four outcomes live; resolve the receiver-readback mechanic; fill `config.js` real profile.
 3. `references/03-quickbooks.md` — authorize the Cowork QuickBooks connector; verify the read-only aged-item lookup.
