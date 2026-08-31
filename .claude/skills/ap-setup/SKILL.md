@@ -34,7 +34,7 @@ You may edit exactly two things:
 4. `references/04-gmail.md` — authorize the AP mailbox; confirm the address and the 45-day window.
 5. `references/05-vendors-aliases.md` — reconcile vendor names across Job Boss / QuickBooks / Suppliers folders with Ian; finalize `vendors.json` (aliases + auto-pay list).
 6. `references/06-seed-ledger.md` — the seeding interview + seed run so the first live run starts with a warm ledger.
-7. `references/07-verify.md` — mock demo, then a **dry-run on real data**, then extraction validation on real invoices; review with Ian; set the go-live switches.
+7. `references/07-verify.md` — mock demo, then a **dry-run on real data** (just a few test cases), then extraction validation on real invoices; review with Ian; set the go-live switches.
 
 ## Rules for this session
 
