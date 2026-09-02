@@ -1,14 +1,16 @@
 # Right Mfg — AP invoice automation
 
-Automates the weekly accounts-payable pass: gather supplier invoices (scanned batch + AP mailbox), read the key figures, check statements against QuickBooks (read-only), enter clean two-way PO matches into JobBOSS² via a frozen Playwright engine, and hand back a short report of the judgment calls.
+Automates the weekly accounts-payable pass: read supplier invoices, pull the key figures, enter clean two-way PO matches into JobBOSS² via a frozen Playwright engine, and hand back a short report of the judgment calls.
 
 **Design in one line:** the machine does the mechanical 90% safely; every mismatch, low-confidence read, or unknown lands in the report for Ian. Nothing is ever paid on a guess.
+
+> **Runtime & v1 scope.** Runs in **Claude Code** on the machine with Job Boss access + the OneDrive files (the Windows PC) — it uses local Node/Playwright and local files, so it cannot run in Cowork (a sandboxed VM). **v1 processes the scanned-batch folder only.** Email intake (Gmail connector) and the QuickBooks statement check are **Phase 2**. See `CONTINUE-HERE.md` for current status; where older docs (BUILD-PLAN, ONSITE-SESSION-PREP) say "Cowork" or "Mac," `CONTINUE-HERE.md` wins.
 
 ## Two skills
 
 | Skill | When | What it does |
 |---|---|---|
-| **`ap-setup`** | once, on Ian's Mac, attended | Installer. Captures live Job Boss selectors, authorizes QuickBooks + Gmail, reconciles vendors, seeds the ledger, proves it with a dry-run. |
+| **`ap-setup`** | once, on the target machine, attended | Installer. Captures live Job Boss selectors, reconciles vendors, seeds the ledger, proves it with a dry-run. (Connector auth is Phase 2.) |
 | **`ap-weekly-run`** | every Friday | Operational. Runs the weekly pass and produces the report. Runs the entry engine — never reads its source. |
 
 The split keeps the daily driver lean: setup knowledge lives in `ap-setup`; the weekly skill just reads the config setup wrote and invokes the engine.
@@ -16,12 +18,12 @@ The split keeps the daily driver lean: setup knowledge lives in `ap-setup`; the 
 ## Architecture
 
 ```
-Documents (scans + email)                     Cowork connectors
-        │                                       ┌───────────────┐
-        ▼                                        │  Gmail (read) │
-  extract/  →  §7 JSON  ──┐                      │  QuickBooks   │
-  (text-layer | Sonnet)   │                      │  (read-only)  │
-                          ▼                       └───────────────┘
+Scanned batch (New Scans/)          [Phase 2: Gmail connector, QuickBooks]
+        │
+        ▼
+  extract/  →  §7 JSON  ──┐
+  (text-layer | Sonnet)   │
+                          ▼
                    src/ entry engine  ──────────────►  JobBOSS²
                    (frozen, deterministic)             (UI automation)
                           │

@@ -1,6 +1,8 @@
 # QuickBooks — read-only statement aged-item check (Procedure C)
 
-**QuickBooks gets ZERO writes.** This is a read-only lookup via the **Cowork QuickBooks connector**. QuickBooks is the *payment* record — Job Boss knows what was ordered/received, not what was paid, so the "already paid?" question is answered here.
+> **[PHASE 2 — off in v1.]** v1 does not do the automated QuickBooks check. Scanned statements are filed to `Statements/` for Ian's monthly manual review. This reference describes the check for when it's turned on. **Runtime note:** the check needs a QuickBooks connector/MCP that works **inside Claude Code** (the runtime that also runs the Job Boss automation) — do NOT assume the Cowork connector, which lives in a separate environment that can't run the local automation. Confirm an available QB integration before building on this.
+
+**QuickBooks gets ZERO writes.** This is a read-only lookup. QuickBooks is the *payment* record — Job Boss knows what was ordered/received, not what was paid, so the "already paid?" question is answered here.
 
 ## Which statements
 

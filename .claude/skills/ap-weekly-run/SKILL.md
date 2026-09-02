@@ -7,6 +7,12 @@ description: Run the weekly AP invoice pass for Right Mfg — gather invoices fr
 
 You are running Right Mfg's weekly accounts-payable pass. Ian normally does this by hand every Friday. Your job is to do the mechanical 90% safely and hand Ian a short report of the judgment 10%.
 
+## v1 scope (read this first)
+
+- **Runtime: Claude Code** on the machine that has Job Boss access + the OneDrive files (the Windows PC). This skill runs local Node/Playwright and reads local files — it cannot run in Cowork (a sandboxed VM that can't drive the local browser).
+- **v1 processes the SCANNED-BATCH folder only** (Procedure A → D). **Email intake (Procedure B) and the QuickBooks statement check (Procedure C) are Phase 2** — skip them unless a later version turns them on. When email is added it uses the Gmail connector (not IMAP); QuickBooks is deferred until a connector is available in Claude Code.
+- Everything below describes the full system; the **[Phase 2]** tags mark what's off in v1.
+
 ## The one rule that matters most
 
 **You RUN the entry engine — you never read its source.** The deterministic money path lives in `src/` (a frozen Playwright engine). You invoke it as a command and consume its JSON/exit-code output. Do **not** open `src/*.js` into context, and never hand-click Job Boss yourself. Reading the code wastes context and tempts "improvements" to the one path that must not drift. Everything you need to run and interpret it is in `references/script-contract.md`.
@@ -23,10 +29,10 @@ Run **Procedure E first**, then gather, then enter.
 
 1. **E — Recheck not-yet-received.** For every open `not_yet_received` item in the ledger, re-run the match (its PDF is still in `Shipment Not Yet Received/`). If a receiver now exists it routes to entry; if not it stays waiting and ages. This runs first so newly-arrived goods get entered before this week's fresh batch.
 2. **Gather.**
-   - **A — Scanned batch** (`New Scans/`, ~15 pages, one master PDF): OCR the whole batch up front, segment into documents (boundary signals: vendor change, invoice-number change, `Page 1 of N`), classify each (file_only vendor → file; statement → Procedure C; else invoice).
-   - **B — AP mailbox** (Gmail): list a **rolling 45-day window** (read AND unread — never scope by unread), then dedup against the ledger by `source_message_id` **before** downloading anything.
-3. **Extract** each invoice document to the §7 contract. See `references/extraction.md`. Born-digital emailed PDFs use the deterministic text-layer path; scanned pages use a **Sonnet sub-agent** per document. **Low confidence on any required field → "Issue reading PDF" in the report. Never guess.**
-4. **C — Statements → QuickBooks.** For each emailed statement, check its aged rows against QuickBooks (read-only) via the **Cowork QuickBooks connector**. See `references/quickbooks.md`. Clean → note; still-open/aged → escalate in the report. **Zero writes to QuickBooks, ever.**
+   - **A — Scanned batch** (`New Scans/`, ~15 pages, one master PDF): OCR the whole batch up front, segment into documents (boundary signals: vendor change, invoice-number change, `Page 1 of N`), classify each (file_only vendor → file; statement → park to `Statements/`; else invoice).
+   - **B — AP mailbox** (Gmail) — **[Phase 2, off in v1].** When enabled: list a rolling 45-day window (read AND unread), dedup against the ledger by `source_message_id` before downloading. Uses the Gmail connector.
+3. **Extract** each invoice document to the §7 contract. See `references/extraction.md`. Scanned pages: OCR then extract (a **Sonnet sub-agent** per document keeps it off the main context). Born-digital PDFs use the deterministic text-layer path. **Low confidence on any required field → "Issue reading PDF" in the report. Never guess.**
+4. **C — Statements → QuickBooks** — **[Phase 2, off in v1].** For now, file any scanned statement to `Statements/` for Ian's monthly manual review; do not do the automated aged-item check. See `references/quickbooks.md` for when it's turned on. **Zero writes to QuickBooks, ever.**
 5. **D — Enter invoices.** Hand the extracted invoice records to the entry engine (one command). The engine does the two-way PO match and the four-outcome routing. See `references/script-contract.md`.
 
 ## After the run
@@ -49,6 +55,6 @@ Run **Procedure E first**, then gather, then enter.
 
 - `references/script-contract.md` — how to run the engine, its exact output, statuses, and failure modes. **Read this before running the engine.**
 - `references/extraction.md` — the §7 extraction contract, the Sonnet sub-agent path, the extra_charges scan, the never-guess rule.
-- `references/quickbooks.md` — the read-only statement aged-item check via the Cowork connector.
+- `references/quickbooks.md` — the read-only statement aged-item check. **[Phase 2]** — reference only in v1.
 - `references/add-vendor.md` — the self-learning loop: new vendors, extraction notes, and what must never be learned.
 - `assets/report-template.md` — the report skeleton to fill in.
